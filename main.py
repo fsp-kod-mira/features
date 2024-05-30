@@ -111,43 +111,9 @@ def serve():
     feature_pb2_grpc.add_FeatureServicer_to_server(FeatureServicer(), server)
     server.add_insecure_port(grpc_port)
     server.start()
-    print("Сервер запущен...")
     server.wait_for_termination()
 
 
-
-
-def main():
-    AddPriority(name="High Priority", coefficient=1.5)
-    print("Добавлен приоритет: High Priority")
-
-    priority_id = GetSession().query(Priority).filter_by(name="High Priority").first().id
-    AddFeature(name="New Feature 1", priority_id=priority_id)
-    print("Добавлена фича: New Feature 1")
-
-    objects = GetObjects()
-    print("Все объекты:")
-    for obj in objects:
-        print(obj)
-
-    EditPriority(priority_id, name="Updated Priority", coefficient=2.0)
-    print("Приоритет обновлен: Updated Priority")
-
-    feature_id = GetSession().query(Feature).filter_by(name="New Feature 1").first().id
-    EditFeature(feature_id, priority_id, name="Updated Feature 1")
-    print("Фича обновлена: Updated Feature 1")
-
-    DelFeature(feature_id)
-    print(f"Фича с ID {feature_id} удалена")
-
-    try:
-        DelPriority(priority_id)
-        print(f"Приоритет с ID {priority_id} удален")
-    except DeleteError as e:
-        print(e)
-
-#if __name__ == "__main__":
-#    main()
 
 if __name__ == '__main__':
     print(f"Run server on {grpc_port}")
