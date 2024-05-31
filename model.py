@@ -3,6 +3,15 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy.exc import IntegrityError
 from config import *
+import os
+
+psql_conn_url = os.getenv('PSQL_URL')
+if psql_conn_url == None:
+    psql_conn_url = 'postgresql://postgres:postgres@localhost:5432/fichi'
+
+
+
+
 
 Base = declarative_base()
 engine = create_engine(psql_conn_url)

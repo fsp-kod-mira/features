@@ -15,6 +15,7 @@ services:
       - .env.pg
     environment:
        GRPC_IPPORT: '0.0.0.0:50052'
+       PSQL_URL: 'postgresql://postgres:postgres@localhost:5432/fichi'
     ports:
       - "5438:5432"
 
