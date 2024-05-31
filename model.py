@@ -7,10 +7,7 @@ import os
 
 psql_conn_url = os.getenv('PSQL_URL')
 if psql_conn_url == None:
-    psql_conn_url = 'postgresql://postgres:postgres@localhost:5432/fichi'
-
-
-
+    psql_conn_url = 'postgresql://nlclover:rootNodeJS1243@localhost:5432/fichi'
 
 
 Base = declarative_base()

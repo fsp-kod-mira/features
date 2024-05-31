@@ -20,7 +20,7 @@ class FeatureServicer(feature_pb2_grpc.FeatureServicer):
     
     def Get(self, request, context):
         logger.info("Get request")
-        ams = GetObjects()
+        ams = model.GetObjects()
         messages = feature_pb2.HibrydFeatureList()
         for s in ams: 
             print(s)
@@ -44,7 +44,7 @@ class FeatureServicer(feature_pb2_grpc.FeatureServicer):
         logger.info("AddPriority request")
         try:
             model.AddPriority(request.name, request.coefficient)
-            priority = model.GetSession().query(Priority).filter_by(name=request.name).first()
+            priority = model.GetSession().query(model.Priority).filter_by(name=request.name).first()
             return feature_pb2.PriorityStruct(id=priority.id, name=priority.name, coefficient=priority.coefficient)
         except Exception as e:
             context.set_details(str(e))
@@ -81,6 +81,7 @@ class FeatureServicer(feature_pb2_grpc.FeatureServicer):
             context.set_details(str(e))
             context.set_code(grpc.StatusCode.INTERNAL)
             return feature_pb2.PriorityStruct()
+
 
     def EditFeature(self, request, context):
         logger.info("EditFeature request")
