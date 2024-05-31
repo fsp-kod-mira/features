@@ -1,0 +1,22 @@
+version: '4.5'
+
+services:
+  features:
+    build: .
+    ports:
+      - "50051:50051"
+  
+  features-postgres:
+    image: postgres:13.14-alpine3.19
+    restart: always
+    volumes:
+      - features-pgdata:/var/lib/postgresql/data
+    env_file:
+      - .env.pg
+    environment:
+       GRPC_IPPORT: '0.0.0.0:50052'
+    ports:
+      - "5438:5432"
+
+volumes:
+  features-pgdata:

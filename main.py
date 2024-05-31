@@ -3,12 +3,23 @@ import feature_pb2
 import feature_pb2_grpc
 from concurrent import futures
 import model
+import logging
+import os
 
-grpc_port = '[::]:50051'
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+
+grpc_port = os.environ.get('GRPC_IPPORT')
+if grpc_port == None:
+    grpc_port = '0.0.0.0:50052'
+
 
 class FeatureServicer(feature_pb2_grpc.FeatureServicer):
     
     def Get(self, request, context):
+        logger.info("Get request")
         ams = GetObjects()
         messages = feature_pb2.HibrydFeatureList()
         for s in ams: 
@@ -16,38 +27,49 @@ class FeatureServicer(feature_pb2_grpc.FeatureServicer):
             
             messages.items.append(
                 feature_pb2.HibrydFeature(
-                    feature_id = s["id"],
-                    priority_id = s["priority"]["id"],
-                    feature_name = s["name"],
+                    feature_id    = s["id"],
+                    priority_id   = s["priority"]["id"],
+                    feature_name  = s["name"],
                     priority_name = s["priority"]["name"],
-                    coefficient = s["priority"]["coefficient"]
+                    coefficient   = s["priority"]["coefficient"]
                 )
             )
             
         return messages
 
     
+
+
     def AddPriority(self, request, context):
+        logger.info("AddPriority request")
         try:
             model.AddPriority(request.name, request.coefficient)
-            priority = GetSession().query(Priority).filter_by(name=request.name).first()
+            priority = model.GetSession().query(Priority).filter_by(name=request.name).first()
             return feature_pb2.PriorityStruct(id=priority.id, name=priority.name, coefficient=priority.coefficient)
         except Exception as e:
             context.set_details(str(e))
             context.set_code(grpc.StatusCode.INTERNAL)
             return feature_pb2.PriorityStruct()
 
+
+
+
     def AddFeature(self, request, context):
+        logger.info("AddFeature request")
         try:
             model.AddFeature(request.name, request.priority_id)
-            feature = GetSession().query(Feature).filter_by(name=request.name).first()
+            feature = model.GetSession().query(model.Feature).filter_by(name=request.name).first()
             return feature_pb2.FeatureStruct(id=feature.id, name=feature.name, priority_id=feature.priority_id)
         except Exception as e:
             context.set_details(str(e))
             context.set_code(grpc.StatusCode.INTERNAL)
             return feature_pb2.FeatureStruct()
 
+
+
+
     def EditPriority(self, request, context):
+        logger.info("EditPriority request")
         try:
             model.EditPriority(request.id, request.name, request.coefficient)
             return feature_pb2.PriorityStruct(id=request.id, name=request.name, coefficient=request.coefficient)
@@ -61,6 +83,7 @@ class FeatureServicer(feature_pb2_grpc.FeatureServicer):
             return feature_pb2.PriorityStruct()
 
     def EditFeature(self, request, context):
+        logger.info("EditFeature request")
         try:
             model.EditFeature(request.id, request.priority_id, request.name)
             return feature_pb2.FeatureStruct(id=request.id, name=request.name, priority_id=request.priority_id)
@@ -74,6 +97,7 @@ class FeatureServicer(feature_pb2_grpc.FeatureServicer):
             return feature_pb2.FeatureStruct()
 
     def DeletePriority(self, request, context):
+        logger.info("DeletePriority request")
         try:
             model.DelPriority(request.id)
             return feature_pb2.Empty()
@@ -87,6 +111,7 @@ class FeatureServicer(feature_pb2_grpc.FeatureServicer):
             return feature_pb2.Empty()
 
     def DeleteFeature(self, request, context):
+        logger.info("DeleteFeature request")
         try:
             model.DelFeature(request.id)
             return feature_pb2.Empty()
@@ -102,6 +127,7 @@ class FeatureServicer(feature_pb2_grpc.FeatureServicer):
 
 
     def GetFeaturesById(self, request, context):
+        logger.info("GetFeaturesById request")
         try:
             s = model.GetFeatureById(request.id)
             
@@ -135,5 +161,5 @@ def serve():
 
 
 if __name__ == '__main__':
-    print(f"Run server on {grpc_port}")
+    logger.info(f"Run server on {grpc_port}")
     serve()
