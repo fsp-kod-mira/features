@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy.exc import IntegrityError
-from config import *
+
 import os
 
 psql_conn_url = os.getenv('PSQL_URL')
