@@ -23,7 +23,6 @@ class FeatureServicer(feature_pb2_grpc.FeatureServicer):
         ams = model.GetObjects()
         messages = feature_pb2.HibrydFeatureList()
         for s in ams: 
-            print(s)
             
             messages.items.append(
                 feature_pb2.HibrydFeature(
