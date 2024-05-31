@@ -16,6 +16,7 @@ class Feature(Base):
 
     priorities = relationship("Priority", back_populates="feature")
 
+
 class Priority(Base):
     __tablename__ = 'priorities'
 
@@ -24,15 +25,19 @@ class Priority(Base):
     coefficient = Column(Float)
     feature = relationship("Feature", back_populates="priorities")
 
+
 def CreateTables():
     Base.metadata.create_all(engine)
+
 
 def GetSession():
     Session = sessionmaker(bind=engine)
     return Session()
 
+
 class DeleteError(Exception):
     pass
+
 
 def AddPriority(name, coefficient):
     """
@@ -43,6 +48,7 @@ def AddPriority(name, coefficient):
     session.add(new_priority)
     session.commit()
     session.close()
+
 
 def AddFeature(name, priority_id):
     """
@@ -141,3 +147,27 @@ def GetObjects():
     return features_dicts
 
 CreateTables()
+
+
+
+
+    
+
+
+def GetFeatureById(feature_id):
+    with GetSession() as session:
+        
+        feature = session.query(Feature).filter(Feature.id == feature_id).first()
+       
+        feature_dict = {
+            "id": feature.id,
+            "name": feature.name,
+            "priority": {
+                "id": feature.priorities.id,
+                "name": feature.priorities.name,
+                "coefficient": feature.priorities.coefficient
+            }
+        }
+        
+        return feature_dict
+
