@@ -4,7 +4,11 @@ services:
   features:
     build: .
     ports:
-      - "50051:50051"
+      - "5254:5254"
+    environment:
+      GRPC_IPPORT: '0.0.0.0:5254'
+      PSQL_URL: 'postgresql://postgres:postgres@features-postgres:5432/fichi'
+      WAIT_HOSTS: features-postgres:5432 
   
   features-postgres:
     image: postgres:13.14-alpine3.19
@@ -13,9 +17,6 @@ services:
       - features-pgdata:/var/lib/postgresql/data
     env_file:
       - .env.pg
-    environment:
-       GRPC_IPPORT: '0.0.0.0:50052'
-       PSQL_URL: 'postgresql://postgres:postgres@localhost:5432/fichi'
     ports:
       - "5438:5432"
 
