@@ -42,12 +42,12 @@ class FeatureStub(object):
         self.AddPriority = channel.unary_unary(
                 '/FeatureService.Feature/AddPriority',
                 request_serializer=feature__pb2.PriorityStruct.SerializeToString,
-                response_deserializer=feature__pb2.PriorityStruct.FromString,
+                response_deserializer=feature__pb2.IdStruct.FromString,
                 _registered_method=True)
         self.AddFeature = channel.unary_unary(
                 '/FeatureService.Feature/AddFeature',
                 request_serializer=feature__pb2.FeatureStruct.SerializeToString,
-                response_deserializer=feature__pb2.FeatureStruct.FromString,
+                response_deserializer=feature__pb2.IdStruct.FromString,
                 _registered_method=True)
         self.DelPriority = channel.unary_unary(
                 '/FeatureService.Feature/DelPriority',
@@ -138,12 +138,12 @@ def add_FeatureServicer_to_server(servicer, server):
             'AddPriority': grpc.unary_unary_rpc_method_handler(
                     servicer.AddPriority,
                     request_deserializer=feature__pb2.PriorityStruct.FromString,
-                    response_serializer=feature__pb2.PriorityStruct.SerializeToString,
+                    response_serializer=feature__pb2.IdStruct.SerializeToString,
             ),
             'AddFeature': grpc.unary_unary_rpc_method_handler(
                     servicer.AddFeature,
                     request_deserializer=feature__pb2.FeatureStruct.FromString,
-                    response_serializer=feature__pb2.FeatureStruct.SerializeToString,
+                    response_serializer=feature__pb2.IdStruct.SerializeToString,
             ),
             'DelPriority': grpc.unary_unary_rpc_method_handler(
                     servicer.DelPriority,
@@ -202,7 +202,7 @@ class Feature(object):
             target,
             '/FeatureService.Feature/AddPriority',
             feature__pb2.PriorityStruct.SerializeToString,
-            feature__pb2.PriorityStruct.FromString,
+            feature__pb2.IdStruct.FromString,
             options,
             channel_credentials,
             insecure,
@@ -229,7 +229,7 @@ class Feature(object):
             target,
             '/FeatureService.Feature/AddFeature',
             feature__pb2.FeatureStruct.SerializeToString,
-            feature__pb2.FeatureStruct.FromString,
+            feature__pb2.IdStruct.FromString,
             options,
             channel_credentials,
             insecure,

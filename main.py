@@ -5,6 +5,7 @@ from concurrent import futures
 import model
 import logging
 import os
+from model import DeleteError, Priority, Feature
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -44,11 +45,11 @@ class FeatureServicer(feature_pb2_grpc.FeatureServicer):
         try:
             model.AddPriority(request.name, request.coefficient)
             priority = model.GetSession().query(model.Priority).filter_by(name=request.name).first()
-            return feature_pb2.PriorityStruct(id=priority.id, name=priority.name, coefficient=priority.coefficient)
+            return feature_pb2.IdStruct(id=priority.id)
         except Exception as e:
             context.set_details(str(e))
             context.set_code(grpc.StatusCode.INTERNAL)
-            return feature_pb2.PriorityStruct()
+            return feature_pb2.Empty()
 
 
 
@@ -58,11 +59,11 @@ class FeatureServicer(feature_pb2_grpc.FeatureServicer):
         try:
             model.AddFeature(request.name, request.priority_id)
             feature = model.GetSession().query(model.Feature).filter_by(name=request.name).first()
-            return feature_pb2.FeatureStruct(id=feature.id, name=feature.name, priority_id=feature.priority_id)
+            return feature_pb2.IdStruct(id=feature.id)
         except Exception as e:
             context.set_details(str(e))
             context.set_code(grpc.StatusCode.INTERNAL)
-            return feature_pb2.FeatureStruct()
+            return feature_pb2.Empty()
 
 
 
