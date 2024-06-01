@@ -79,6 +79,11 @@ class FeatureStub(object):
                 request_serializer=feature__pb2.IdStruct.SerializeToString,
                 response_deserializer=feature__pb2.HibrydFeature.FromString,
                 _registered_method=True)
+        self.GetFeaturesByName = channel.unary_unary(
+                '/FeatureService.Feature/GetFeaturesByName',
+                request_serializer=feature__pb2.NameStruct.SerializeToString,
+                response_deserializer=feature__pb2.FeatureStruct.FromString,
+                _registered_method=True)
 
 
 class FeatureServicer(object):
@@ -132,6 +137,12 @@ class FeatureServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetFeaturesByName(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_FeatureServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -174,6 +185,11 @@ def add_FeatureServicer_to_server(servicer, server):
                     servicer.GetFeaturesById,
                     request_deserializer=feature__pb2.IdStruct.FromString,
                     response_serializer=feature__pb2.HibrydFeature.SerializeToString,
+            ),
+            'GetFeaturesByName': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetFeaturesByName,
+                    request_deserializer=feature__pb2.NameStruct.FromString,
+                    response_serializer=feature__pb2.FeatureStruct.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -392,6 +408,33 @@ class Feature(object):
             '/FeatureService.Feature/GetFeaturesById',
             feature__pb2.IdStruct.SerializeToString,
             feature__pb2.HibrydFeature.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetFeaturesByName(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/FeatureService.Feature/GetFeaturesByName',
+            feature__pb2.NameStruct.SerializeToString,
+            feature__pb2.FeatureStruct.FromString,
             options,
             channel_credentials,
             insecure,

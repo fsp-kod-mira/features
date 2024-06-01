@@ -85,6 +85,26 @@ class FeatureServicer(feature_pb2_grpc.FeatureServicer):
 
 
 
+
+    def GetFeaturesByName(self, request, context):
+        logger.info("AddFeature request")
+        try:
+            
+            feature = model.GetFeatureByName(request.name)
+         
+            if feature:
+                context.set_details(str(e))
+                context.set_code(grpc.StatusCode.ALREADY_EXISTS)
+                return feature_pb2.FeatureStruct(id=feature.id, name=feature.name, priority_id=feature.priority_id)
+            
+            context.set_details(str(e))
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+
+        except Exception as e:
+
+            context.set_details(str(e))
+            context.set_code(grpc.StatusCode.INTERNAL)
+
 # get feature by name
 
 
