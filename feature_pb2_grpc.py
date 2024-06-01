@@ -47,7 +47,7 @@ class FeatureStub(object):
         self.AddFeature = channel.unary_unary(
                 '/FeatureService.Feature/AddFeature',
                 request_serializer=feature__pb2.FeatureStruct.SerializeToString,
-                response_deserializer=feature__pb2.IdStruct.FromString,
+                response_deserializer=feature__pb2.FeatureStruct.FromString,
                 _registered_method=True)
         self.DelPriority = channel.unary_unary(
                 '/FeatureService.Feature/DelPriority',
@@ -143,7 +143,7 @@ def add_FeatureServicer_to_server(servicer, server):
             'AddFeature': grpc.unary_unary_rpc_method_handler(
                     servicer.AddFeature,
                     request_deserializer=feature__pb2.FeatureStruct.FromString,
-                    response_serializer=feature__pb2.IdStruct.SerializeToString,
+                    response_serializer=feature__pb2.FeatureStruct.SerializeToString,
             ),
             'DelPriority': grpc.unary_unary_rpc_method_handler(
                     servicer.DelPriority,
@@ -229,7 +229,7 @@ class Feature(object):
             target,
             '/FeatureService.Feature/AddFeature',
             feature__pb2.FeatureStruct.SerializeToString,
-            feature__pb2.IdStruct.FromString,
+            feature__pb2.FeatureStruct.FromString,
             options,
             channel_credentials,
             insecure,

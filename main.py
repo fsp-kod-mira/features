@@ -6,6 +6,8 @@ import model
 import logging
 import os
 from model import DeleteError, Priority, Feature
+from sqlalchemy.exc import IntegrityError
+from grpc_reflection.v1alpha import reflection
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -59,11 +61,33 @@ class FeatureServicer(feature_pb2_grpc.FeatureServicer):
         try:
             model.AddFeature(request.name, request.priority_id)
             feature = model.GetSession().query(model.Feature).filter_by(name=request.name).first()
-            return feature_pb2.IdStruct(id=feature.id)
-        except Exception as e:
+            return feature_pb2.FeatureStruct(id=feature.id, name=feature.name, priority_id=feature.priority_id)
+        
+        except IntegrityError as e:
+
+          
+            feature = model.GetFeatureByName(request.name)
+         
+
+            if feature:
+                context.set_details(str(e))
+                context.set_code(grpc.StatusCode.ALREADY_EXISTS)
+                return feature_pb2.FeatureStruct(id=feature.id, name=feature.name, priority_id=feature.priority_id)
+            
             context.set_details(str(e))
             context.set_code(grpc.StatusCode.INTERNAL)
-            return feature_pb2.Empty()
+
+        except Exception as e:
+
+            context.set_details(str(e))
+            context.set_code(grpc.StatusCode.INTERNAL)
+            
+
+
+
+# get feature by name
+
+
 
 
 
@@ -145,7 +169,7 @@ class FeatureServicer(feature_pb2_grpc.FeatureServicer):
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(str(e))
         
-        return templates_pb2.Empty()
+        return feature_pb2.Empty()
         
 
 
@@ -155,6 +179,12 @@ class FeatureServicer(feature_pb2_grpc.FeatureServicer):
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     feature_pb2_grpc.add_FeatureServicer_to_server(FeatureServicer(), server)
+    SERVICE_NAMES = (
+            feature_pb2.DESCRIPTOR.services_by_name['Feature'].full_name,
+            reflection.SERVICE_NAME,
+        )
+
+    reflection.enable_server_reflection(SERVICE_NAMES, server)
     server.add_insecure_port(grpc_port)
     server.start()
     server.wait_for_termination()
