@@ -59,29 +59,25 @@ class FeatureServicer(feature_pb2_grpc.FeatureServicer):
     def AddFeature(self, request, context):
         logger.info("AddFeature request")
         try:
-            model.AddFeature(request.name, request.priority_id)
-            feature = model.GetSession().query(model.Feature).filter_by(name=request.name).first()
-            return feature_pb2.FeatureStruct(id=feature.id, name=feature.name, priority_id=feature.priority_id)
-        
-        except IntegrityError as e:
-
-          
             feature = model.GetFeatureByName(request.name)
-         
 
             if feature:
-                context.set_details(str(e))
-                context.set_code(grpc.StatusCode.ALREADY_EXISTS)
+                
+                #context.set_code(grpc.StatusCode.ALREADY_EXISTS)
                 return feature_pb2.FeatureStruct(id=feature.id, name=feature.name, priority_id=feature.priority_id)
             
-            context.set_details(str(e))
-            context.set_code(grpc.StatusCode.INTERNAL)
+            else:
 
+                model.AddFeature(request.name, request.priority_id)
+                feature = model.GetSession().query(model.Feature).filter_by(name=request.name).first()
+                return feature_pb2.FeatureStruct(id=feature.id, name=feature.name, priority_id=feature.priority_id)
+        
         except Exception as e:
 
-            context.set_details(str(e))
+            #context.set_details(e)
             context.set_code(grpc.StatusCode.INTERNAL)
-            
+
+            print(e)           
 
 
 
@@ -93,8 +89,8 @@ class FeatureServicer(feature_pb2_grpc.FeatureServicer):
             feature = model.GetFeatureByName(request.name)
          
             if feature:
-                context.set_details(str(e))
-                context.set_code(grpc.StatusCode.ALREADY_EXISTS)
+                #context.set_details(str(e))
+                #context.set_code(grpc.StatusCode.ALREADY_EXISTS)
                 return feature_pb2.FeatureStruct(id=feature.id, name=feature.name, priority_id=feature.priority_id)
             
             context.set_details(str(e))
@@ -104,6 +100,7 @@ class FeatureServicer(feature_pb2_grpc.FeatureServicer):
 
             context.set_details(str(e))
             context.set_code(grpc.StatusCode.INTERNAL)
+            
 
 # get feature by name
 
